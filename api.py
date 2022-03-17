@@ -3,9 +3,7 @@ from cleantext import clean
 import re
 from pprint import pprint
 import yake
-from rake_nltk import Rake
-import nltk
-nltk.download('stopwords')
+
 
 consumer_key = "PrClisT6ArX0u91a0Tr8FkLEd"
 consumer_secret = "c6tRq3XKpi4U5jB1Tavqjb4C3HDmmJ1L7jG6Xskk3CRtqIuAE7"
@@ -20,7 +18,7 @@ api = tweepy.Client(bearer_token = bearer_token)
 def getDict(user_id):
     tweetDict = {}
     text = ''
-    for tweet in tweepy.Paginator(api.get_users_tweets, user_id , exclude = 'retweets' , max_results = 10).flatten(limit=10):
+    for tweet in tweepy.Paginator(api.get_users_tweets, user_id , exclude = 'retweets' , max_results = 100).flatten(limit=1000):
         string  = " ".join(str(tweet).split())
         string = clean(string, no_emoji=True)
         string=re.sub(r'http\S+', '', string)
@@ -74,13 +72,48 @@ for kw in keywords:
 newKeywords = sortList(k)
 
 # Min of 2-gram and max of 4-gram
-sortedKeywords = newKeywords[:50]
+sortedKeywords = newKeywords[11:20]
 
-query = "(-is:retweet -is:quote -is:reply) ("
+query = "(-is:retweet -is:quote -is:reply -is:verified lang:en) ("
 
 for i in sortedKeywords:
     query += "\""+i[0]+"\" OR "
+
+query = query[:len(query)-4]
+
+query += ')'
+
+print(query)
 print(len(query))
-    
+
+# This section is for searching the tweets
+#tweetsSearched = api.search_recent_tweets(query , max_results = 100)
+
+for tweet in tweepy.Paginator(api.search_recent_tweets , query , max_results = 100).flatten(limit=1000):
+    string  = " ".join(str(tweet).split())
+    string = clean(string, no_emoji=True)
+    string=re.sub(r'http\S+', '', string)
+    newlist = []
+    for letter in string.split():
+        if letter.endswith(":"):
+            pass
+        else:
+            newlist.append(letter)
+    string = ' '.join(newlist)
+    newlist=[]
+    for letter in string:
+        if letter == "@":
+            letter = letter.replace("@", "")
+            newlist.append(letter)
+        else:
+            newlist.append(letter)
+    string = ''.join(newlist)
+    newstring=string.split()
+    res = list(map(lambda st: str.replace(st, "&amp;", "&"), newstring))
+    tweetVal = ' '.join(res)
+    tweetId = tweet.id
+    print(tweetId)
+    print(tweetVal)
+    print("\n")
 
 #(-is:retweet -is:quote -is:reply) (Indian OR Government OR "Indian Government" OR Farmers Congress OR Farmers OR Congress OR Government Citizens OR Minister OR Media Government OR People Indian Government OR People Government OR People Indian)
