@@ -53,4 +53,3 @@ verifiedTweet = dict()
 verifiedTweet.update(verifiedTweetMIB)
 verifiedTweet.update(verifiedTweetPIB)
 
-print(verifiedTweet)
