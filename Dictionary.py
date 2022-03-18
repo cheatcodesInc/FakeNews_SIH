@@ -1,14 +1,16 @@
 import tweepy
 from cleantext import clean
 import re
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-consumer_key = "PrClisT6ArX0u91a0Tr8FkLEd"
-consumer_secret = "c6tRq3XKpi4U5jB1Tavqjb4C3HDmmJ1L7jG6Xskk3CRtqIuAE7"
-access_token = "91092883-kaSrqgWvxQiSxSTsAHF7D34mTIBbmTA96W4sLYI9p"
-token_secret = "EOcnRNqxpfYSzws7aTz0WWbDYVFepDXLWxnbbDWk4DTr8"
-bearer_token = "AAAAAAAAAAAAAAAAAAAAAA%2B0aAEAAAAA3gerSEr%2BsRtUjaXfYK9iiOE1ZWM%3D4v6OoHklVcQobE37ZeWtKT6U7R1rkXIEhR9p1q21SzOo7A3SLg"
-
-# authentication
+consumer_key = os.getenv("consumer_key")
+consumer_secret = os.getenv("consumer_secret")
+access_token = os.getenv("access_token")
+token_secret = os.getenv("token_secret")
+bearer_token = os.getenv("bearer_token")
+#authentication
 
 api = tweepy.Client(bearer_token=bearer_token)
 
@@ -16,8 +18,7 @@ api = tweepy.Client(bearer_token=bearer_token)
 def getDict(user_id):
     tweetDict = {}
     text = ''
-    for tweet in tweepy.Paginator(api.get_users_tweets, user_id, exclude='retweets', max_results=100).flatten(
-            limit=1000):
+    for tweet in tweepy.Paginator(api.get_users_tweets, user_id, exclude='retweets', max_results=100).flatten(limit=100):
         string = " ".join(str(tweet).split())
         string = clean(string, no_emoji=True)
         string = re.sub(r'http\S+', '', string)
@@ -45,5 +46,11 @@ def getDict(user_id):
     return tweetDict, text
 
 
-verifiedTweetDictionary, text = getDict(231033118)  # PIB
-verifiedTweetDictionary2, text2 = getDict(920488039)  # MIB
+verifiedTweetPIB, text = getDict(231033118)  # PIB
+verifiedTweetMIB, text2 = getDict(920488039)  # MIB
+
+verifiedTweet = dict()
+verifiedTweet.update(verifiedTweetMIB)
+verifiedTweet.update(verifiedTweetPIB)
+
+print(verifiedTweet)
