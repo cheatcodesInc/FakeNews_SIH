@@ -57,11 +57,18 @@ def getDict(user_id):
 
 d , text = getDict(231033118)
 
+# Inserting docs to mongodb
 for key , value in d.items():
     try:
         tweetcollection.insert_one({"_id" : key , "tweet": value})
     except pymongo.errors.DuplicateKeyError:
         continue
+
+# Reading data from mongodb
+cursor = tweetcollection.find()
+for doc in cursor:
+    print(doc)
+
 
 
 
