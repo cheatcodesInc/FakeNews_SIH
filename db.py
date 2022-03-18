@@ -35,13 +35,18 @@ for key , value in unverifiedTweet.items():
 
 
 verifiedTweetDict = dict()
+unverifiedTweetDict = dict()
 
 #Reading data from mongodb
 cursor = verifiedTweetCollection.find()
 for doc in cursor:
     verifiedTweetDict[doc['_id']] = doc['tweet']
 
-print(verifiedTweetDict)
+cursor = unverifiedTweetCollection.find()
+for doc in cursor:
+    unverifiedTweetDict[doc['_id']] = doc['tweet']
+
+
 
 
 
