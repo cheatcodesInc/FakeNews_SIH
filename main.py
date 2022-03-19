@@ -66,8 +66,8 @@ for i in dictOfTexts[ claimLabel ]:
     similarity = word_vectors.wmdistance(claim, i)
     listOfSim.append(similarity)
 
-dictOfSim = list( enumerate( listOfSim ))
-dictOfSim = {k: v for k, v in sorted( dictOfSim.items(), key = lambda item: item[1], reverse = True )}
+dictOfSim = dict( enumerate( listOfSim ))
+dictOfSim = {k: v for k, v in sorted( dictOfSim.items(), key = lambda item: item[1] )}
 
 listOfRealtedIDs = []
 
