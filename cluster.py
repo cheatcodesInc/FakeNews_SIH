@@ -38,6 +38,16 @@ def getClusterOfIds( clusterLabels, tweetDictionary ):
             tweetDict[j] = [i]
         else:
             tweetDict[j].append(i)
+    
+    tweetTexts = list(tweetDictionary.values())
+    labelizedTexts = {}
+
+    for i, j in tweetDict.items():
+        for k in j:
+            if i not in labelizedTexts:
+                labelizedTexts[i] = [tweetTexts[k]]
+            else:
+                labelizedTexts[i].append( tweetTexts[k] )
 
     labelizedIds = {}
     keysList = list(tweetDictionary.keys())
@@ -48,4 +58,4 @@ def getClusterOfIds( clusterLabels, tweetDictionary ):
             else:
                 labelizedIds[i].append( keysList[k] )
 
-    return labelizedIds
+    return labelizedIds, labelizedTexts
