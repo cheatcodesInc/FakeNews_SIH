@@ -1,0 +1,10 @@
+streamlit==1.7.0
+requests==2.27.1
+gensim==4.1.2 
+nltk==3.7 
+re==2.2.1
+pymongo==4.0.2
+tweepy==4.7.0 
+clean-text==0.6.0
+dotenv==0.0.5 
+yake==0.4.8

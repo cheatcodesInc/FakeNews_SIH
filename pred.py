@@ -9,7 +9,10 @@ def query(payload):
 
 def factcheck(input):
     output = query({"inputs": input,})
-    false_score = output[0][0].get('score')
+    try:
+      false_score = output[0][0].get('score')
+    except:
+      return 'Timed Out. Please try again.'
     if(false_score>=0.6):
       return "Fake"
     elif(false_score<=0.4):

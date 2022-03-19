@@ -2,8 +2,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import re
-import gensim
-from gensim import corpora
+
+from db import verifiedTweetDict
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -12,17 +12,16 @@ nltk.download('omw-1.4')
 
 stop_words=set(stopwords.words('english'))
 lemma=WordNetLemmatizer()
-ls = []
 
-def preprocess(doc):
+def preprocess( text ):
     
-    doc = re.sub(r'\W', ' ', str(doc))
-    doc = re.sub(r'\s+[a-zA-Z]\s+', ' ', doc)
-    doc = re.sub(r'\^[a-zA-Z]\s+', ' ', doc)
-    doc =  re.sub(r'\s+', ' ', doc)
-    text = re.sub(r'^b\s+', '', doc)
+    text = re.sub( r'\W', ' ', str( text ))
+    text = re.sub( r'\s+[a-zA-Z]\s+', ' ', text )
+    text = re.sub( r'\^[a-zA-Z]\s+', ' ', text )
+    text = re.sub( r'\s+', ' ', text )
+    text = re.sub( r'^b\s+', '', text )
     
-    tokenize = nltk.tokenize.word_tokenize(text)
+    tokenize = nltk.tokenize.word_tokenize( text )
     tokenize = [ word.lower() for word in tokenize if word.isalpha() ]
     nonStops = [ i for i in tokenize if i not in stop_words ]    
     lemmas = [ lemma.lemmatize(i) for i in nonStops ]    
@@ -30,11 +29,23 @@ def preprocess(doc):
     
     return tokens
 
-def predTweet( text ):
-
-    text = preprocess( text )
-    text = input_dict.doc2bow( text )
-    l = lda.get_document_topics( text )
-    l.sort(key=lambda x: x[1], reverse=True)
+# This function returns the dict of label: clusterID from the clusterLabels
+def getClusterOfIds( clusterLabels, tweetDictionary ):
     
-    return l[0][0]
+    tweetDict = {}
+    for i, j in enumerate( clusterLabels ):
+        if j not in tweetDict:
+            tweetDict[j] = [i]
+        else:
+            tweetDict[j].append(i)
+
+    labelizedIds = {}
+    keysList = list(tweetDictionary.keys())
+    for i, j in tweetDict.items():
+        for k in j:
+            if i not in labelizedIds:
+                labelizedIds[i] = [ keysList[k] ]
+            else:
+                labelizedIds[i].append( keysList[k] )
+
+    return labelizedIds
