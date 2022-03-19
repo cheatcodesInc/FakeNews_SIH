@@ -5,6 +5,7 @@ import gensim
 from gensim import corpora
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+import gensim.downloader as api
 
 from Dictionary import getDict # test purpose
 from db import storeInDB
@@ -14,6 +15,8 @@ from pred import factcheck
 
 stop_words=set(stopwords.words('english'))
 lemma=WordNetLemmatizer()
+word_vectors = api.load("glove-wiki-gigaword-100")
+
 
 def predTweet( text ):
     
@@ -49,7 +52,7 @@ tweet_lda = gensim.models.ldamodel.LdaModel( tweet_corpus, num_topics=10, id2wor
 tweetLabels = [ predTweet( i ) for i in tweetTexts ]
 # print( tweetLabels )
 
-dictOfIDs = getClusterOfIds( tweetLabels, verifiedTweetDict )
+dictOfIDs, dictOfTexts = getClusterOfIds( tweetLabels, verifiedTweetDict )
 
 
 claim = st.text_input("Enter your claim")
@@ -58,8 +61,22 @@ claimLabel = predTweet( claim )
 fact = factcheck( claim )
 st.header( fact )
 
+listOfSim = []
+for i in dictOfTexts[ claimLabel ]:
+    similarity = word_vectors.wmdistance(claim, i)
+    listOfSim.append(similarity)
 
-listOfRealtedIDs = dictOfIDs[ claimLabel ]
+dictOfSim = dict( enumerate( listOfSim ))
+dictOfSim = {k: v for k, v in sorted( dictOfSim.items(), key = lambda item: item[1] )}
+
+listOfRealtedIDs = []
+
+for i in dictOfSim.keys():
+    listOfRealtedIDs.append( dictOfIDs[ claimLabel ][ i ])
+
+print( listOfRealtedIDs )
+
+# listOfRealtedIDs = dictOfIDs[ claimLabel ]
 listOfURLs = []
 
 for _ in listOfRealtedIDs:
