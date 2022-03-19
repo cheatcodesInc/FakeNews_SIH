@@ -30,8 +30,8 @@ def theTweet(tweet_url):
     res = response.json()["html"]
     return res
 
-# verifiedTweetDict, _ = storeInDB()
-verifiedTweetDict, _ = getDict( 231033118 )
+verifiedTweetDict, _ = storeInDB()
+#verifiedTweetDict, _ = getDict( 231033118 )
 tweetTexts = list( verifiedTweetDict.values() )
 tokenizedTweets = []
 
